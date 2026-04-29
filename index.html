@@ -52,10 +52,9 @@
       display: flex; align-items: center; justify-content: space-between;
       height: 56px;
     }
-    .nav-brand {
-      font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em;
-      color: var(--teal); text-decoration: none; text-transform: uppercase;
-    }
+    .nav-brand { text-decoration: none; display: flex; flex-direction: column; gap: 0.1rem; }
+    .nav-brand-name { font-size: 0.88rem; font-weight: 700; color: var(--white); letter-spacing: 0.01em; }
+    .nav-brand-title { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.02em; }
     .nav-links { display: flex; gap: 2rem; list-style: none; }
     .nav-links a {
       color: var(--mid); font-size: 0.88rem; text-decoration: none;
@@ -254,6 +253,7 @@
     #cta { text-align: center; padding: 5rem 0; }
     #cta h2 { font-size: 2rem; }
     #cta p { max-width: 600px; margin: 1rem auto 2rem; font-size: 1rem; }
+    .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
     .cta-button {
       display: inline-block; background: var(--teal); color: var(--navy);
       font-weight: 700; font-size: 0.95rem; letter-spacing: 0.03em;
@@ -261,6 +261,13 @@
       transition: background 0.2s, transform 0.15s;
     }
     .cta-button:hover { background: var(--teal-dim); transform: translateY(-1px); }
+    .cta-button-outline {
+      display: inline-block; background: transparent; color: var(--teal);
+      font-weight: 700; font-size: 0.95rem; letter-spacing: 0.03em;
+      padding: 0.85rem 2.25rem; border-radius: 6px; text-decoration: none;
+      border: 1px solid var(--teal); transition: background 0.2s, transform 0.15s;
+    }
+    .cta-button-outline:hover { background: rgba(0,194,203,0.08); transform: translateY(-1px); }
 
     /* ── Footer ── */
     footer {
@@ -296,10 +303,13 @@
 
 <!-- Navigation -->
 <nav>
-  <a class="nav-brand" href="#">NG</a>
+  <a class="nav-brand" href="#">
+    <span class="nav-brand-name">Neha Goyal</span>
+    <span class="nav-brand-title">Product Leader, ML &amp; AI Platforms</span>
+  </a>
   <ul class="nav-links">
     <li><a href="#framework">Framework</a></li>
-    <li><a href="#platform">Platform</a></li>
+    <li><a href="architecture.html">Architecture</a></li>
     <li><a href="#impact">Impact</a></li>
     <li><a href="#stories">Case Studies</a></li>
     <li><a href="#about">About</a></li>
@@ -543,7 +553,10 @@ PRO CODE  →  LangGraph · LangChain · Strands · LlamaIndex
     <h2>The Next Chapter</h2>
     <p>Enterprise AI is moving from the era of experiments to the era of foundations. The companies that will lead are not the ones with the best models. They're the ones that built the infrastructure to make AI work reliably, at scale, for every type of builder in their organization.</p>
     <p>I've spent the last several years building those foundations. The framework is repeatable. The lessons are transferable.</p>
-    <a class="cta-button" href="mailto:nehagoyal.17@gmail.com">Let's talk →</a>
+    <div class="cta-buttons">
+      <a class="cta-button" href="mailto:nehagoyal.17@gmail.com">Email me →</a>
+      <a class="cta-button-outline" href="https://www.linkedin.com/in/nehagoyal17/" target="_blank" rel="noopener">LinkedIn →</a>
+    </div>
   </div>
 </section>
 
@@ -554,7 +567,7 @@ PRO CODE  →  LangGraph · LangChain · Strands · LlamaIndex
     <a href="mailto:nehagoyal.17@gmail.com">Email</a>
     <a href="https://linkedin.com/in/nehagoyal17" target="_blank" rel="noopener">LinkedIn</a>
     <a href="#framework">Framework</a>
-    <a href="#platform">Platform</a>
+    <a href="architecture.html">Architecture</a>
     <a href="#stories">Case Studies</a>
   </p>
 </footer>
