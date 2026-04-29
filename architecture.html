@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enterprise AI Tech Stack — Architectural Blueprint | Neha Goyal</title>
+  <meta name="description" content="A layered architectural blueprint for building a scalable enterprise AI platform — from no-code productivity to production-grade agentic systems." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #0D1B2A;
+      --teal:      #00C2CB;
+      --teal-dim:  #00a0a8;
+      --teal-bg:   rgba(0,194,203,0.07);
+      --teal-border: rgba(0,194,203,0.25);
+      --white:     #F8F9FA;
+      --mid:       #CBD5E1;
+      --muted:     #8899AA;
+      --card:      #111E2C;
+      --card2:     #0F1923;
+      --border:    #1E2D3D;
+      --red:       #e05c5c;
+      --amber:     #f0a04b;
+      --green:     #4caf84;
+      --purple:    #9b7fe8;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--navy); color: var(--white);
+      font-family: var(--font-body); font-size: 16px;
+      line-height: 1.75; -webkit-font-smoothing: antialiased;
+    }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,27,42,0.95); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem; display: flex; align-items: center;
+      justify-content: space-between; height: 56px;
+    }
+    .nav-brand { text-decoration: none; display: flex; flex-direction: column; gap: 0.1rem; }
+    .nav-brand-name { font-size: 0.88rem; font-weight: 700; color: var(--white); letter-spacing: 0.01em; }
+    .nav-brand-title { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.02em; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--mid); font-size: 0.88rem; text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--teal); }
+
+    /* Layout */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+    section { padding: 4.5rem 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
+
+    /* Hero */
+    #hero { padding: 6rem 0 4rem; }
+    .hero-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--teal); font-weight: 700; margin-bottom: 1rem; }
+    .hero-h1 { font-size: clamp(1.9rem, 4vw, 2.75rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    .hero-sub { font-size: 1.1rem; color: var(--mid); max-width: 680px; margin-bottom: 2rem; }
+    .hero-principle {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      padding: 1.25rem 1.5rem; border-radius: 0 8px 8px 0;
+      font-size: 1rem; color: var(--mid); max-width: 700px;
+    }
+    .hero-principle strong { color: var(--white); }
+
+    /* Section headings */
+    h2 { font-size: 1.65rem; font-weight: 700; color: var(--white); letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    .section-sub { font-size: 0.97rem; color: var(--muted); margin-bottom: 2.5rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; color: var(--teal); margin: 2rem 0 0.6rem; }
+    h4 { font-size: 0.95rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
+    p { color: var(--mid); margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--white); font-weight: 600; }
+
+    /* ── STACK OVERVIEW VISUAL ── */
+    .stack-visual { margin: 2.5rem 0; }
+
+    .stack-tier {
+      border-radius: 10px; margin-bottom: 1rem;
+      overflow: hidden; border: 1px solid var(--border);
+    }
+    .tier-header {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0.9rem 1.5rem;
+    }
+    .tier-label {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; padding: 0.25rem 0.75rem;
+      border-radius: 20px; white-space: nowrap;
+    }
+    .tier-title { font-size: 1rem; font-weight: 700; color: var(--white); }
+    .tier-who { font-size: 0.85rem; color: var(--muted); margin-left: auto; }
+
+    .tier-body { padding: 0 1.5rem 1.25rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+    .cap-card {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.9rem 1.1rem; flex: 1 1 200px;
+    }
+    .cap-name { font-size: 0.82rem; font-weight: 700; color: var(--white); margin-bottom: 0.25rem; }
+    .cap-tool { font-size: 0.78rem; color: var(--teal); font-family: var(--font-mono); margin-bottom: 0.4rem; }
+    .cap-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* Tier color themes */
+    .tier-nocode .tier-header { background: rgba(0,194,203,0.08); }
+    .tier-nocode .tier-label { background: rgba(0,194,203,0.15); color: var(--teal); }
+    .tier-lowcode .tier-header { background: rgba(240,160,75,0.08); }
+    .tier-lowcode .tier-label { background: rgba(240,160,75,0.15); color: var(--amber); }
+    .tier-lowcode .cap-tool { color: var(--amber); }
+    .tier-procode .tier-header { background: rgba(155,127,232,0.08); }
+    .tier-procode .tier-label { background: rgba(155,127,232,0.15); color: var(--purple); }
+    .tier-procode .cap-tool { color: var(--purple); }
+    .tier-governance .tier-header { background: rgba(76,175,132,0.08); }
+    .tier-governance .tier-label { background: rgba(76,175,132,0.15); color: var(--green); }
+    .tier-governance .cap-tool { color: var(--green); }
+
+    /* Connector arrow */
+    .tier-connector {
+      text-align: center; padding: 0.2rem 0;
+      color: var(--muted); font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── AGENTIC ARCHITECTURE ── */
+    .arch-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1rem; margin: 2rem 0;
+    }
+    .arch-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.5rem;
+    }
+    .arch-box-title {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--teal); font-weight: 700; margin-bottom: 1rem;
+    }
+    .arch-item {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+    }
+    .arch-item:last-child { border-bottom: none; }
+    .arch-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); margin-top: 8px; flex-shrink: 0; }
+    .arch-item-name { font-size: 0.88rem; font-weight: 600; color: var(--white); }
+    .arch-item-desc { font-size: 0.82rem; color: var(--muted); }
+
+    .flow-diagram {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 2rem; margin: 2rem 0;
+      font-family: var(--font-mono); font-size: 0.82rem;
+    }
+    .flow-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 0.6rem; flex-wrap: wrap;
+    }
+    .flow-node {
+      background: rgba(0,194,203,0.1); border: 1px solid var(--teal-border);
+      border-radius: 6px; padding: 0.35rem 0.85rem;
+      color: var(--teal); font-size: 0.8rem; white-space: nowrap;
+    }
+    .flow-node.purple { background: rgba(155,127,232,0.1); border-color: rgba(155,127,232,0.3); color: var(--purple); }
+    .flow-node.amber { background: rgba(240,160,75,0.1); border-color: rgba(240,160,75,0.3); color: var(--amber); }
+    .flow-node.green { background: rgba(76,175,132,0.1); border-color: rgba(76,175,132,0.3); color: var(--green); }
+    .flow-arrow { color: var(--muted); font-size: 0.9rem; }
+
+    /* ── PERSONA MAP TABLE ── */
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.88rem; }
+    thead th {
+      background: var(--card); color: var(--teal);
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--border);
+    }
+    tbody td { padding: 0.9rem 1rem; color: var(--mid); border-bottom: 1px solid var(--border); vertical-align: top; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,0.02); }
+    .persona-cell { color: var(--white); font-weight: 600; }
+    .tool-tag {
+      display: inline-block; background: var(--teal-bg); border: 1px solid var(--teal-border);
+      border-radius: 4px; padding: 0.15rem 0.5rem;
+      font-size: 0.75rem; color: var(--teal);
+      font-family: var(--font-mono); margin: 0.15rem 0.15rem 0.15rem 0;
+    }
+    .tool-tag.purple { background: rgba(155,127,232,0.08); border-color: rgba(155,127,232,0.25); color: var(--purple); }
+    .tool-tag.amber { background: rgba(240,160,75,0.08); border-color: rgba(240,160,75,0.25); color: var(--amber); }
+    .tool-tag.green { background: rgba(76,175,132,0.08); border-color: rgba(76,175,132,0.25); color: var(--green); }
+
+    /* ── ML PLATFORM CALLOUT ── */
+    .ml-platform-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 2rem; margin: 1.5rem 0;
+    }
+    .ml-pillars { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin: 1.5rem 0; }
+    .ml-pillar {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.25rem;
+    }
+    .ml-pillar-name { font-size: 0.85rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+    .ml-pillar-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .ml-pillar-metric { font-size: 0.78rem; color: var(--teal); margin-top: 0.5rem; font-weight: 600; }
+
+    /* ── PRINCIPLES ── */
+    .principles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
+    .principle-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.5rem;
+    }
+    .principle-number {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--teal); font-weight: 700; margin-bottom: 0.5rem;
+    }
+    .principle-name { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+    .principle-desc { font-size: 0.87rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── QUALITY SECTION ── */
+    .quality-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
+    .quality-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.5rem;
+    }
+    .quality-title { font-size: 0.9rem; font-weight: 700; color: var(--white); margin-bottom: 1rem; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+    footer a { color: var(--muted); text-decoration: none; margin: 0 0.75rem; }
+    footer a:hover { color: var(--teal); }
+    .footer-name { color: var(--white); font-weight: 600; margin-bottom: 0.5rem; }
+
+    /* Divider */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+    /* ── ARCHITECTURE OVERVIEW DIAGRAM ── */
+    .overview-diagram {
+      border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; margin: 2.5rem 0; background: var(--card2);
+    }
+    .overview-diagram-header {
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.75rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .odh-title {
+      font-size: 0.8rem; font-weight: 700; color: var(--white);
+      letter-spacing: 0.02em;
+    }
+    .odh-note {
+      font-size: 0.72rem; color: var(--muted);
+    }
+
+    /* Main grid: left label | center components | right governance */
+    .diagram-layout {
+      display: grid;
+      grid-template-columns: 150px 1fr 130px;
+      overflow-x: auto; min-width: 560px;
+    }
+
+    /* Label column cells — direct grid children */
+    .d-label-cell {
+      padding: 1.5rem 1.25rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .d-label-cell.d-last { border-bottom: none; }
+    .d-label-cell.ml-cell { background: rgba(100,149,237,0.04); }
+
+    .d-layer-name {
+      font-size: 0.88rem; font-weight: 700; color: var(--white);
+      margin-bottom: 0.3rem;
+    }
+    .d-layer-name.c1 { color: var(--teal); }
+    .d-layer-name.c2 { color: var(--amber); }
+    .d-layer-name.c3 { color: var(--purple); }
+    .d-layer-name.c4 { color: #6495ed; }
+
+    .d-layer-desc {
+      font-size: 0.75rem; color: var(--muted); line-height: 1.4;
+    }
+
+    /* Components column cells — direct grid children */
+    .d-comps-cell {
+      padding: 1.5rem 1.5rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 0.6rem; align-content: center;
+    }
+    .d-comps-cell.d-last { border-bottom: none; }
+    .d-comps-cell.ml-cell { background: rgba(100,149,237,0.03); }
+
+    .d-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.55rem 0.9rem;
+      font-size: 0.8rem; font-weight: 500; color: var(--mid);
+      white-space: nowrap;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .d-box:hover { color: var(--white); border-color: rgba(255,255,255,0.15); }
+    .d-box.c1 { border-color: rgba(0,194,203,0.2); }
+    .d-box.c2 { border-color: rgba(240,160,75,0.2); }
+    .d-box.c3 { border-color: rgba(155,127,232,0.2); }
+    .d-box.c4 { border-color: rgba(100,149,237,0.2); }
+
+    /* Governance column — spans all rows */
+    .d-gov-col {
+      background: rgba(76,175,132,0.04);
+      display: flex; flex-direction: column;
+      grid-column: 3; grid-row: 1 / span 4;
+    }
+    .d-gov-header {
+      padding: 1rem 0.75rem 0.75rem;
+      border-bottom: 1px solid rgba(76,175,132,0.15);
+      text-align: center;
+    }
+    .d-gov-header span {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--green);
+    }
+    .d-gov-items {
+      flex: 1; padding: 1rem 0.75rem;
+      display: flex; flex-direction: column; justify-content: space-around; gap: 0.5rem;
+    }
+    .d-gov-box {
+      font-size: 0.72rem; color: rgba(76,175,132,0.9);
+      border: 1px solid rgba(76,175,132,0.18);
+      border-radius: 5px; padding: 0.45rem 0.6rem;
+      text-align: center; line-height: 1.35;
+      background: rgba(76,175,132,0.06);
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .arch-grid, .ml-pillars, .principles-grid, .quality-grid { grid-template-columns: 1fr; }
+      nav { padding: 0 1rem; }
+      .nav-links { gap: 1rem; }
+      .container { padding: 0 1.25rem; }
+      .tier-who { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">
+    <span class="nav-brand-name">Neha Goyal</span>
+    <span class="nav-brand-title">Product Leader, ML &amp; AI Platforms</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html#framework">Framework</a></li>
+    <li><a href="architecture.html" style="color:var(--teal)">Architecture</a></li>
+    <li><a href="index.html#impact">Impact</a></li>
+    <li><a href="index.html#stories">Case Studies</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#cta">Contact</a></li>
+  </ul>
+</nav>
+
+
+<!-- Hero -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-label">Enterprise AI Architecture</div>
+    <h1 class="hero-h1">Building a Scalable Enterprise<br>AI Tech Stack</h1>
+    <p class="hero-sub">A layered architectural blueprint for C-suite leaders designing their organization's GenAI platform portfolio — from daily productivity tools to production-grade agentic systems, with governance built in from the start.</p>
+    <div class="hero-principle">
+      <strong>The core design question is not which AI tool to adopt.</strong> It is how to build a stack where every type of builder has a clear path, every tool connects to the platform, and governance is not a checkpoint at the end but a design requirement from day one.
+    </div>
+  </div>
+</section>
+
+
+<!-- Stack Overview -->
+<section id="stack">
+  <div class="container">
+    <h2>The Architecture in One View</h2>
+    <p class="section-sub">Four tiers, intentionally layered — designed for progressive capability so teams can start anywhere and scale without re-architecting.</p>
+
+    <!-- Overview Diagram -->
+    <div class="overview-diagram">
+
+      <div class="overview-diagram-header">
+        <span class="odh-title">Enterprise AI Platform — Architectural Overview</span>
+        <span class="odh-note">Governance layer spans all tiers</span>
+      </div>
+
+      <div class="diagram-layout">
+
+        <!-- Row 1: AI Productivity -->
+        <div class="d-label-cell">
+          <div class="d-layer-name c1">AI Productivity</div>
+          <div class="d-layer-desc">Intelligent tools for every employee</div>
+        </div>
+        <div class="d-comps-cell">
+          <span class="d-box c1">AI Playground &amp; Chat Interface</span>
+          <span class="d-box c1">Enterprise Knowledge Search</span>
+          <span class="d-box c1">AI Copilot</span>
+        </div>
+
+        <!-- Row 2: Workflow Automation -->
+        <div class="d-label-cell">
+          <div class="d-layer-name c2">Workflow Automation</div>
+          <div class="d-layer-desc">AI-triggered, event-driven orchestration</div>
+        </div>
+        <div class="d-comps-cell">
+          <span class="d-box c2">Workflow Automation Platform</span>
+          <span class="d-box c2">Data MCP Connectors</span>
+          <span class="d-box c2">AI-triggered Automations</span>
+        </div>
+
+        <!-- Row 3: Agentic AI Engineering -->
+        <div class="d-label-cell">
+          <div class="d-layer-name c3">Agentic AI Engineering</div>
+          <div class="d-layer-desc">Production agents, RAG, and multi-model systems</div>
+        </div>
+        <div class="d-comps-cell">
+          <span class="d-box c3">Agent SDK</span>
+          <span class="d-box c3">Agent Orchestration (LangGraph · LangChain · LlamaIndex · A2A)</span>
+          <span class="d-box c3">Long-term &amp; Session Memory</span>
+          <span class="d-box c3">RAG Pipeline &amp; Vector Store</span>
+          <span class="d-box c3">GraphRAG &amp; Knowledge Graphs</span>
+          <span class="d-box c3">Document Intelligence (Docling · Unstructured)</span>
+          <span class="d-box c3">Semantic Caching (GPTCache)</span>
+          <span class="d-box c3">LLM Access Proxy (LiteLLM)</span>
+          <span class="d-box c3">Evaluation &amp; Prompt Management</span>
+          <span class="d-box c3">MCP Marketplace</span>
+          <span class="d-box c3">Fine-tuning Infrastructure</span>
+        </div>
+
+        <!-- Row 4: ML Platform Foundation -->
+        <div class="d-label-cell ml-cell d-last">
+          <div class="d-layer-name c4">ML Platform Foundation</div>
+          <div class="d-layer-desc">Real-time signals, model serving, experimentation</div>
+        </div>
+        <div class="d-comps-cell ml-cell d-last">
+          <span class="d-box c4">Feature Store (Online · Offline · Streaming)</span>
+          <span class="d-box c4">ML Orchestrator &amp; Inference Serving</span>
+          <span class="d-box c4">AutoML &amp; Model Registry</span>
+          <span class="d-box c4">Experimentation Platform</span>
+        </div>
+
+        <!-- Governance column — spans all 4 rows -->
+        <div class="d-gov-col">
+          <div class="d-gov-header"><span>Governance</span></div>
+          <div class="d-gov-items">
+            <div class="d-gov-box">Risk Classification (OPA)</div>
+            <div class="d-gov-box">PII Controls (Presidio · LLM Guard)</div>
+            <div class="d-gov-box">Identity &amp; Access (SPIFFE)</div>
+            <div class="d-gov-box">Data Sovereignty</div>
+            <div class="d-gov-box">Observability &amp; Tracing</div>
+            <div class="d-gov-box">Cost Attribution</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="stack-visual">
+
+      <!-- No Code Tier -->
+      <div class="stack-tier tier-nocode">
+        <div class="tier-header">
+          <span class="tier-label">No Code</span>
+          <span class="tier-title">AI for Everyday Users</span>
+          <span class="tier-who">Business users · Operators · Domain experts</span>
+        </div>
+        <div class="tier-body">
+          <div class="cap-card">
+            <div class="cap-name">AI Playground & Chat Interface</div>
+            <div class="cap-tool">Claude · GPT-4o · Gemini · Copilot</div>
+            <div class="cap-desc">Prompt prototyping, LLM interaction, and conversational AI for daily work. The lowest-friction entry point for any employee.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">Enterprise Knowledge Search</div>
+            <div class="cap-tool">Glean · Permission-aware RAG</div>
+            <div class="cap-desc">Semantic search across all internal systems and documents. Turns existing enterprise data into an AI-ready knowledge asset without custom RAG setup.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-connector">↓ teams outgrow daily productivity and need repeatable automation</div>
+
+      <!-- Low Code Tier -->
+      <div class="stack-tier tier-lowcode">
+        <div class="tier-header">
+          <span class="tier-label">Low Code</span>
+          <span class="tier-title">AI for Workflow Builders</span>
+          <span class="tier-who">Analysts · Technical ops · Power users</span>
+        </div>
+        <div class="tier-body">
+          <div class="cap-card">
+            <div class="cap-name">Workflow Automation & Orchestration</div>
+            <div class="cap-tool">n8n · Zapier enterprise · Workflow platforms</div>
+            <div class="cap-desc">Event-driven, multi-system orchestration. Cross-tool productivity flows, approvals, notifications, and AI-triggered actions — without writing backend code.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">Data Connectivity Layer</div>
+            <div class="cap-tool">MCP connectors · Data warehouse MCPs</div>
+            <div class="cap-desc">Bridges AI tools to real enterprise data. Enables natural language queries against internal databases and analytics platforms without SQL knowledge.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-connector">↓ builders need production-grade agents, custom RAG, and multi-model orchestration</div>
+
+      <!-- Pro Code Tier -->
+      <div class="stack-tier tier-procode">
+        <div class="tier-header">
+          <span class="tier-label">Pro Code</span>
+          <span class="tier-title">AI for Builder Teams</span>
+          <span class="tier-who">ML engineers · AI engineers · Platform teams</span>
+        </div>
+        <div class="tier-body">
+          <div class="cap-card">
+            <div class="cap-name">Agent Framework & SDK</div>
+            <div class="cap-tool">Agent SDK · LangGraph · LangChain · Strands · LlamaIndex</div>
+            <div class="cap-desc">Structured SDK for building agents with memory, tools, evaluation, and observability. Defines how agents plan, decide, and interact with tools and each other.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">Evaluation & Prompt Management</div>
+            <div class="cap-tool">Langfuse V3 · DeepEval · OpenTelemetry</div>
+            <div class="cap-desc">Versioned prompts, full agent tracing, and online/offline evaluation pipelines. DeepEval for automated LLM quality scoring — faithfulness, answer relevancy, contextual precision — integrated into CI/CD before every deployment.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">Model Context Protocol (MCP) Marketplace</div>
+            <div class="cap-tool">MCP Tools · Tool discovery & registry</div>
+            <div class="cap-desc">Standard for agent-to-tool and agent-to-agent interoperability. Teams discover, register, and reuse tools across agents without rebuilding integrations.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">Contextual Intelligence & Memory</div>
+            <div class="cap-tool">Long-term memory · Session memory · mem0 · AgentCore</div>
+            <div class="cap-desc">Persists user context across sessions and workflows. Enables agents that remember, personalize, and improve over time rather than resetting on every interaction.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">LLM Access Proxy</div>
+            <div class="cap-tool">LiteLLM · 52+ LLMs · 5 providers · Single governed interface</div>
+            <div class="cap-desc">Centralized, governed access to all LLMs via LiteLLM intelligent routing. Handles model selection, fallback logic, cost attribution, rate limiting, and PII/PCI guardrails behind one interface for all upstream consumers.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">GraphRAG & Knowledge Graphs</div>
+            <div class="cap-tool">Apache AGE · Neo4j · Microsoft GraphRAG</div>
+            <div class="cap-desc">Graph-based retrieval for complex multi-hop reasoning over structured entity relationships. Complements vector search — where vector RAG finds semantically similar chunks, GraphRAG traverses connected knowledge to answer relationship-heavy questions.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">Document Intelligence</div>
+            <div class="cap-tool">Docling · Unstructured</div>
+            <div class="cap-desc">Multimodal document parsing — PDFs, tables, charts, images, mixed-format files — into structured, RAG-ready output. The preprocessing layer that determines retrieval quality before a single embedding is generated.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">Semantic Caching</div>
+            <div class="cap-tool">GPTCache · Redis</div>
+            <div class="cap-desc">Cache LLM responses by semantic similarity, not exact string match. Semantically equivalent questions return cached answers — reducing redundant inference calls, cutting latency, and reducing cost at scale.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">Fine-tuning Infrastructure</div>
+            <div class="cap-tool">Axolotl · HuggingFace TRL · MLflow · vLLM · LoRA/LoRAX</div>
+            <div class="cap-desc">Full fine-tuning pipeline — Axolotl and HuggingFace TRL for efficient training, MLflow for experiment tracking and model registry, vLLM + LoRAX for multi-adapter serving. Optimized for domain-specific models on Databricks and Bedrock.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-connector">↓ spanning all tiers — non-negotiable</div>
+
+      <!-- Governance Tier -->
+      <div class="stack-tier tier-governance">
+        <div class="tier-header">
+          <span class="tier-label">Governance Layer</span>
+          <span class="tier-title">Built In — Not Bolted On</span>
+          <span class="tier-who">Applies across every tier</span>
+        </div>
+        <div class="tier-body">
+          <div class="cap-card">
+            <div class="cap-name">Risk Classification Framework</div>
+            <div class="cap-tool">Low · Medium · High risk tiers</div>
+            <div class="cap-desc">Mandatory compliance checkpoints before production. Determines which AI use cases need full security review vs. fast-track deployment.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">PII / PCI Controls & Data Sovereignty</div>
+            <div class="cap-tool">Presidio · LLM Guard · OPA · SPIFFE/SPIRE</div>
+            <div class="cap-desc">Privacy controls embedded at the infrastructure layer — not at the application layer. Presidio for PII detection and redaction, LLM Guard for jailbreak and prompt injection defense, OPA for policy enforcement, SPIFFE/SPIRE for workload identity.</div>
+          </div>
+          <div class="cap-card">
+            <div class="cap-name">Observability & Cost Attribution</div>
+            <div class="cap-tool">Langfuse · Datadog · Splunk · OpenTelemetry</div>
+            <div class="cap-desc">Full tracing and logging for every inference call via OpenTelemetry-compatible instrumentation. Langfuse for LLM-layer observability, Datadog and Splunk for infrastructure. Cross-team cost attribution so every business unit sees its AI spend and ROI in real time.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- Agentic Architecture Deep Dive -->
+<section id="agentic">
+  <div class="container">
+    <h2>The Agentic Architecture</h2>
+    <p class="section-sub">How agents, memory, tools, and orchestration connect at the pro-code tier — the system design behind production-grade agentic AI.</p>
+
+    <div class="flow-diagram">
+      <div class="flow-row">
+        <span style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;width:90px;">Data Layer</span>
+        <span class="flow-node">Enterprise Data Sources</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node">Vector Store</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node">Feature Store</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node amber">Memory Layer</span>
+      </div>
+      <div class="flow-row" style="margin-top:0.75rem;">
+        <span style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;width:90px;">Agent Layer</span>
+        <span class="flow-node amber">Long-term Memory</span>
+        <span class="flow-arrow">+</span>
+        <span class="flow-node amber">Session Memory</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node purple">Agent (LangGraph)</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node purple">MCP Tools</span>
+      </div>
+      <div class="flow-row" style="margin-top:0.75rem;">
+        <span style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;width:90px;">Model Layer</span>
+        <span class="flow-node purple">Agent (LangGraph)</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node">LLM Access Proxy</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node">LLM (routed)</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node">Response</span>
+      </div>
+      <div class="flow-row" style="margin-top:0.75rem;">
+        <span style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;width:90px;">Observe</span>
+        <span class="flow-node green">LangSmith / Langfuse</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node green">Traces · Cost · Evals</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node green">Datadog · Splunk</span>
+      </div>
+    </div>
+
+    <div class="arch-grid">
+      <div class="arch-box">
+        <div class="arch-box-title">Agent Orchestration Frameworks</div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">LangGraph</div><div class="arch-item-desc">Stateful multi-agent workflows with explicit control flow, branching, and human-in-the-loop support</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">LangChain</div><div class="arch-item-desc">Chain-based agent composition with a broad tool and retriever ecosystem</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">LlamaIndex</div><div class="arch-item-desc">RAG-first framework optimized for document intelligence and knowledge retrieval agents</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">AWS Strands</div><div class="arch-item-desc">AWS-native agent orchestration with built-in Bedrock integration and tool calling</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">A2A Protocol</div><div class="arch-item-desc">Google's Agent-to-Agent protocol for cross-agent communication. Enables multi-agent systems where specialized agents delegate to each other with structured, authenticated handoffs — complementing MCP for tool access</div></div>
+        </div>
+      </div>
+
+      <div class="arch-box">
+        <div class="arch-box-title">Memory Architecture</div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Long-term Memory</div><div class="arch-item-desc">Persistent user and entity context across sessions. Hybrid semantic + scalar search (HNSW). Survives conversation resets.</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Session Memory</div><div class="arch-item-desc">In-context working memory for the duration of a conversation or agentic task run</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Episodic Memory</div><div class="arch-item-desc">Stores past agent actions and outcomes. Enables agents to learn from prior task executions</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Semantic Memory</div><div class="arch-item-desc">Factual knowledge base for domain-specific grounding. Backed by vector store and retrieval layer</div></div>
+        </div>
+      </div>
+
+      <div class="arch-box">
+        <div class="arch-box-title">LLM Access & Model Routing</div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">OpenAI / Azure OpenAI</div><div class="arch-item-desc">GPT-4o, GPT-4.1, o3 — reasoning, coding, general purpose. Azure OpenAI for enterprise VNet-bound, compliance-scoped deployments</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Anthropic Claude (via Bedrock)</div><div class="arch-item-desc">Claude 4 Haiku, Sonnet, Opus — long context, document intelligence, safety-critical workflows. AWS Bedrock for governed, region-bound access</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">AWS Bedrock (LLaMA 4 · DeepSeek R1)</div><div class="arch-item-desc">Open-weight models for fine-tuning, on-prem deployment, and cost-sensitive workloads via managed Bedrock inference</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Google Vertex AI (Gemini 2.5)</div><div class="arch-item-desc">Multimodal, long-context, Google Cloud-native workloads</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Databricks (DBRX · LLaMA 4 Scout)</div><div class="arch-item-desc">Data-platform-native inference, fine-tuned models served alongside feature pipelines. Unified compute for training and serving.</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">LiteLLM Routing Layer</div><div class="arch-item-desc">Unified proxy across all providers. Intelligent routing, fallback logic, load balancing, cost tracking, and rate limiting — all providers behind one interface</div></div>
+        </div>
+      </div>
+
+      <div class="arch-box">
+        <div class="arch-box-title">Vector, RAG & Knowledge Infrastructure</div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Vector Store (Elasticsearch)</div><div class="arch-item-desc">BM25 + semantic + RRF hybrid retrieval. Evaluated 17 vendors; one organizational standard reduces fragmentation and operational overhead</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">RAG Pipeline</div><div class="arch-item-desc">Chunking strategy, embedding model selection, retrieval scoring, and reranking — each a product decision with measurable quality impact</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">GraphRAG & Knowledge Graphs</div><div class="arch-item-desc">Apache AGE / Neo4j / Microsoft GraphRAG patterns for multi-hop reasoning over entity relationships. Complements vector search for complex, structured knowledge queries</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Document Intelligence</div><div class="arch-item-desc">Docling and Unstructured for multimodal parsing of PDFs, tables, and charts into RAG-ready structured output. Preprocessing quality determines retrieval quality</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot"></div>
+          <div><div class="arch-item-name">Enterprise RAG (Knowledge Search)</div><div class="arch-item-desc">Permission-aware retrieval across 100+ connectors. Semantic search without custom indexing per data source.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- AI Quality -->
+<section id="quality">
+  <div class="container">
+    <h2>AI Quality & Observability</h2>
+    <p class="section-sub">Production AI requires two distinct quality layers — model monitoring for the ML layer and AI evaluation for the GenAI layer. Both must be live before GA.</p>
+
+    <div class="quality-grid">
+      <div class="quality-card">
+        <div class="quality-title">Model Monitoring</div>
+        <div class="arch-item">
+          <div class="arch-dot" style="background:var(--amber)"></div>
+          <div><div class="arch-item-name">Model Performance Tracking</div><div class="arch-item-desc">Drift detection, eval metrics, and business metrics tied to model outputs. Arize, custom dashboards.</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot" style="background:var(--amber)"></div>
+          <div><div class="arch-item-name">Ground Truth Pipeline</div><div class="arch-item-desc">Label collection and feedback loops to continuously improve model quality post-deployment</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot" style="background:var(--amber)"></div>
+          <div><div class="arch-item-name">Alerting</div><div class="arch-item-desc">Automated alerts on inference error rates, latency threshold breaches, and business metric degradation</div></div>
+        </div>
+      </div>
+
+      <div class="quality-card">
+        <div class="quality-title">AI Evaluation Framework</div>
+        <div class="arch-item">
+          <div class="arch-dot" style="background:var(--green)"></div>
+          <div><div class="arch-item-name">Prompt Management</div><div class="arch-item-desc">Versioned prompts with change history, rollback, and A/B testing. Langfuse V3 for centralized prompt registry and experiment tracking.</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot" style="background:var(--green)"></div>
+          <div><div class="arch-item-name">Agent Tracing</div><div class="arch-item-desc">Full span-level tracing of every agent step — tool calls, LLM calls, memory reads, decision branches. OpenTelemetry-compatible for cross-system observability</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot" style="background:var(--green)"></div>
+          <div><div class="arch-item-name">Offline & Online Evaluation</div><div class="arch-item-desc">Offline: regression tests against golden datasets. Online: real-time quality scoring and hallucination detection in production.</div></div>
+        </div>
+        <div class="arch-item">
+          <div class="arch-dot" style="background:var(--green)"></div>
+          <div><div class="arch-item-name">LLM Quality Scoring (DeepEval)</div><div class="arch-item-desc">Automated evaluation metrics — faithfulness, answer relevancy, contextual precision, toxicity. Integrates with CI/CD pipelines so quality gates run before every production deployment</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Persona Map -->
+<section id="personas">
+  <div class="container">
+    <h2>Persona-to-Stack Mapping</h2>
+    <p class="section-sub">The right stack depends on who is building and what they are building. This is how the architecture maps to every builder in your organization.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Persona</th>
+          <th>What they build</th>
+          <th>Their stack</th>
+          <th>Time to first value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="persona-cell">Business User</td>
+          <td>Answers, summaries, quick research</td>
+          <td>
+            <span class="tool-tag">AI Playground</span>
+            <span class="tool-tag">Enterprise Search</span>
+            <span class="tool-tag">Copilot</span>
+          </td>
+          <td>Day 1</td>
+        </tr>
+        <tr>
+          <td class="persona-cell">Ops / Analyst</td>
+          <td>Automated workflows, cross-tool orchestration, recurring AI tasks</td>
+          <td>
+            <span class="tool-tag amber">n8n</span>
+            <span class="tool-tag amber">MCP connectors</span>
+            <span class="tool-tag amber">Glean Agents</span>
+          </td>
+          <td>1–2 weeks</td>
+        </tr>
+        <tr>
+          <td class="persona-cell">Product Manager</td>
+          <td>AI-assisted prototyping, experimentation, workflow testing</td>
+          <td>
+            <span class="tool-tag amber">n8n</span>
+            <span class="tool-tag">AI Playground</span>
+            <span class="tool-tag purple">Cursor</span>
+            <span class="tool-tag purple">Claude Code</span>
+          </td>
+          <td>1–3 weeks</td>
+        </tr>
+        <tr>
+          <td class="persona-cell">ML / AI Engineer</td>
+          <td>RAG pipelines, multi-agent systems, fine-tuned models, production AI</td>
+          <td>
+            <span class="tool-tag purple">LangGraph</span>
+            <span class="tool-tag purple">LangChain</span>
+            <span class="tool-tag purple">LlamaIndex</span>
+            <span class="tool-tag purple">Agent SDK</span>
+            <span class="tool-tag purple">LangSmith</span>
+            <span class="tool-tag purple">Vector DB</span>
+            <span class="tool-tag purple">LLM Proxy</span>
+          </td>
+          <td>4–8 weeks to production</td>
+        </tr>
+        <tr>
+          <td class="persona-cell">Platform Team</td>
+          <td>The infrastructure all of the above depend on</td>
+          <td>
+            <span class="tool-tag green">LLM Access Proxy</span>
+            <span class="tool-tag green">MCP Marketplace</span>
+            <span class="tool-tag green">Memory Layer</span>
+            <span class="tool-tag green">Observability</span>
+            <span class="tool-tag green">Governance controls</span>
+          </td>
+          <td>Foundational — builds first</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- ML Platform -->
+<section id="ml-platform">
+  <div class="container">
+    <h2>ML Platform — The Foundational Layer</h2>
+    <p class="section-sub">The GenAI stack sits on top of ML platform infrastructure. For organizations running production ML models — search ranking, personalization, recommendations — this layer is what makes the GenAI layer possible.</p>
+
+    <div class="ml-platform-card">
+      <p>The ML Platform handles the foundational model lifecycle: feature engineering, training, serving, and experimentation. Without it, GenAI applications lack the real-time signals, behavioral context, and model serving infrastructure that production-grade AI depends on.</p>
+
+      <div class="ml-pillars">
+        <div class="ml-pillar">
+          <div class="ml-pillar-name">ML Orchestrator</div>
+          <div class="ml-pillar-desc">Pipeline execution, A/B traffic routing, shadow testing, and multi-framework inference (TensorFlow, PyTorch, KServe). The control plane for every model moving from experiment to production.</div>
+          <div class="ml-pillar-metric">90% reduction in inference error rate · 50% productivity gain</div>
+        </div>
+        <div class="ml-pillar">
+          <div class="ml-pillar-name">Feature Store</div>
+          <div class="ml-pillar-desc">Real-time feature serving (Redis online) + historical features (Databricks offline) + Kafka streaming ingestion + vector embeddings. Shared, discoverable, reusable feature engineering across all teams.</div>
+          <div class="ml-pillar-metric">38ms P99 latency · 61% faster than prior system</div>
+        </div>
+        <div class="ml-pillar">
+          <div class="ml-pillar-name">AutoML & Experimentation</div>
+          <div class="ml-pillar-desc">No-code model building for non-ML practitioners via Plexe. Full experimentation platform for rapid model iteration, integrated with the orchestrator for automated A/B routing.</div>
+          <div class="ml-pillar-metric">500+ ML models in production · months → 2–3 weeks</div>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <h4>How ML Platform Connects to the GenAI Stack</h4>
+      <div class="flow-diagram" style="margin-top:1rem;">
+        <div class="flow-row">
+          <span class="flow-node">Feature Store</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">Real-time user signals</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node purple">RAG context enrichment</span>
+        </div>
+        <div class="flow-row" style="margin-top:0.6rem;">
+          <span class="flow-node">ML Models</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">Ranking / personalization scores</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node purple">Agent decision inputs</span>
+        </div>
+        <div class="flow-row" style="margin-top:0.6rem;">
+          <span class="flow-node">ML Orchestrator</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">Model serving infrastructure</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node purple">LLM Proxy routing layer</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Design Principles -->
+<section id="principles">
+  <div class="container">
+    <h2>Four Design Principles</h2>
+    <p class="section-sub">The architectural decisions that separate platforms that scale from platforms that stall.</p>
+
+    <div class="principles-grid">
+      <div class="principle-card">
+        <div class="principle-number">Principle 01</div>
+        <div class="principle-name">Progressive Capability</div>
+        <div class="principle-desc">Design the stack so teams can start at the no-code layer and scale to production agents without re-architecting. The on-ramp must be obvious. The ceiling must be high. Every layer should feed the next.</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-number">Principle 02</div>
+        <div class="principle-name">Persona Alignment</div>
+        <div class="principle-desc">The right tool for a business user is the wrong tool for an ML engineer. One platform for everyone means it is wrong for everyone. The architecture must be tiered to the builder, not flattened to the lowest common denominator.</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-number">Principle 03</div>
+        <div class="principle-name">Governance First</div>
+        <div class="principle-desc">PII controls, risk classification, and cost attribution bolted on at beta become blockers that kill adoption. Built into the infrastructure from day one, they disappear — and production deployments become routine, not exceptional.</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-number">Principle 04</div>
+        <div class="principle-name">Platform Coherence</div>
+        <div class="principle-desc">A collection of disconnected AI tools is not a platform. Each component must connect — agent outputs feed other agents via MCP, feature signals enrich RAG retrieval, model monitoring closes the quality loop. The whole must be greater than the sum.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer>
+  <p class="footer-name">Neha Goyal · Senior Product Leader, Enterprise ML &amp; AI Platforms</p>
+  <p>
+    <a href="mailto:nehagoyal.17@gmail.com">Email</a>
+    <a href="https://linkedin.com/in/nehagoyal17" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="index.html#framework">Framework</a>
+    <a href="index.html#stories">Case Studies</a>
+    <a href="architecture.html">Architecture</a>
+  </p>
+</footer>
+
+</body>
+</html>
