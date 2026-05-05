@@ -52,6 +52,8 @@
     ul li { color: var(--mid); padding: 0.35rem 0 0.35rem 1.5rem; position: relative; }
     ul li::before { content: '→'; position: absolute; left: 0; color: var(--teal); font-weight: 600; }
     ul li strong { color: var(--white); }
+    .nav-links li { padding: 0; position: static; }
+    .nav-links li::before { display: none; }
 
     /* ── Impact Grid ── */
     .value-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
@@ -122,7 +124,7 @@
   <ul class="nav-links">
     <li><a href="framework.html">Framework</a></li>
     <li><a href="architecture.html">Architecture</a></li>
-    <li><a href="patterns.html">AI Patterns</a></li>
+    <li><a href="patterns.html" style="color:var(--teal)">AI Patterns</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="index.html#cta">Contact</a></li>
   </ul>
@@ -137,43 +139,28 @@
   </div>
 </section>
 
-<!-- What the Foundations Unlock -->
-<section id="impact">
+<!-- Category Cards -->
+<section style="padding: 2.5rem 0;">
   <div class="container">
-    <h2>What the Foundations Unlock</h2>
-    <p>When the platform is right, it disappears. What remains is the productivity. Here's what each of the six AI productivity patterns delivers when the infrastructure underneath it is built correctly.</p>
-
     <div class="value-grid">
-      <div class="value-card">
-        <div class="value-card-label">Pattern 01</div>
-        <div class="value-card-title">Knowledge Discovery &amp; Retrieval</div>
-        <p class="value-card-body">Institutional knowledge that lived in documents no one could find becomes queryable in seconds. Research cycles that took days compress to under an hour. Teams stop duplicating work they've already done.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-card-label">Pattern 02</div>
-        <div class="value-card-title">Compliance &amp; Regulatory Intelligence</div>
-        <p class="value-card-body">Quarterly manual audit cycles become continuous monitoring. Coverage gaps close. Vendor dependencies shrink. The compliance team shifts from running the same checks repeatedly to reviewing exceptions.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-card-label">Pattern 03</div>
-        <div class="value-card-title">Workflow Automation &amp; Process Democratization</div>
-        <p class="value-card-body">Use cases that needed a 3-month engineering cycle become 4–6 week builds. Business operators who couldn't build anything now build workflows independently. The platform team stops being the bottleneck.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-card-label">Pattern 04</div>
-        <div class="value-card-title">Content &amp; Asset Generation</div>
-        <p class="value-card-body">Manual review that covered a fraction of content now covers everything. The staffing model stops being the constraint. Quality improves because coverage is no longer a tradeoff against cost.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-card-label">Pattern 05</div>
-        <div class="value-card-title">AI-Driven Analysis &amp; Decision Support</div>
-        <p class="value-card-body">Business users stop waiting in analyst queues for answers to questions that follow a predictable pattern. Decisions get made on current data. The analyst's time shifts to work that genuinely requires judgment.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-card-label">Pattern 06</div>
-        <div class="value-card-title">Process Acceleration</div>
-        <p class="value-card-body">High-volume, repetitive knowledge work — reading, classifying, responding, routing — runs on AI by default. Human effort concentrates on the cases that actually need it. Throughput scales without headcount.</p>
-      </div>
+      <a href="#productivity" style="text-decoration: none;">
+        <div class="value-card" style="transition: border-color 0.2s, transform 0.2s; cursor: pointer;">
+          <div class="value-card-label">Category 01</div>
+          <div class="value-card-title" style="font-size: 1.1rem;">AI for Productivity</div>
+          <div class="value-card-industries">Finance · Legal · HR · Operations · Engineering</div>
+          <p class="value-card-body">Six patterns that reduce the cost and time of work that already happens. Supply-side AI — making existing processes faster, better, and cheaper without changing what the business does.</p>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--teal); margin-top: 0.5rem;">6 patterns ↓</div>
+        </div>
+      </a>
+      <a href="#value-generation" style="text-decoration: none;">
+        <div class="value-card" style="transition: border-color 0.2s, transform 0.2s; cursor: pointer;">
+          <div class="value-card-label">Category 02</div>
+          <div class="value-card-title" style="font-size: 1.1rem;">AI for Value Generation</div>
+          <div class="value-card-industries">Travel · Retail · Financial Services · Healthcare · Media</div>
+          <p class="value-card-body">Six patterns that create new revenue, new customer experiences, or new capabilities. Demand-side AI — changing what customers see, buy, and whether they return.</p>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--teal); margin-top: 0.5rem;">6 patterns ↓</div>
+        </div>
+      </a>
     </div>
   </div>
 </section>
